@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Euclidean Algorithm Adventure</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      margin: 0;
+      padding: 2rem;
+      background-color: #f4f6fa;
+      color: #333;
+      max-width: 700px;
+      margin: auto;
+    }
+    .card {
+      background: white;
+      border-radius: 12px;
+      padding: 20px;
+      box-shadow: 0 3px 8px rgba(0, 0, 0, 0.1);
+      margin-bottom: 20px;
+    }
+    .btn {
+      background: #4f46e5;
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      margin-top: 1rem;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+    .btn:hover {
+      background: #4338ca;
+    }
+    input[type="number"] {
+      padding: 10px;
+      border-radius: 6px;
+      border: 1px solid #ccc;
+      margin-right: 10px;
+      width: 45%;
+    }
+    .hidden {
+      display: none;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>🎮 Euclidean Algorithm Adventure</h1>
+
+  <div id="story" class="card">
+    <h2>📖 The Tale of Arithmo and Dividia</h2>
+    <p>
+      In the Kingdom of Numbers, two rival nobles—Lord Arithmo of 1071 and Lady Dividia of 462—were locked in a dispute over the most powerful shared treasure: the Greatest Common Divisor.
+      <br><br>
+      To settle their quarrel, they summoned the ancient Algorithm Oracle. Only by passing through a series of mathematical trials could the true GCD be revealed!
+      <br><br>
+      Brave traveler, your quest is to guide them through these trials step-by-step, earning wisdom (and points!) with each division.
+    </p>
+    <button class="btn" onclick="startQuest()">Begin Your Quest</button>
+  </div>
+
+  <div id="inputs" class="card hidden">
+    <h2>🔢 Choose Your Numbers</h2>
+    <input type="number" id="inputA" value="1071" />
+    <input type="number" id="inputB" value="462" />
+    <button class="btn" onclick="startGame()">Start Game</button>
+  </div>
+
+  <div id="step" class="card hidden"></div>
+  <div id="result" class="card hidden"></div>
+
+  <script>
+    let steps = [];
+    let currentStep = 0;
+    let score = 0;
+    let gcd = null;
+
+    function startQuest() {
+      document.getElementById("story").classList.add("hidden");
+      document.getElementById("inputs").classList.remove("hidden");
+    }
+
+    function startGame() {
+      const a = parseInt(document.getElementById("inputA").value);
+      const b = parseInt(document.getElementById("inputB").value);
+
+      steps = [];
+      currentStep = 0;
+      score = 0;
+
+      let x = a, y = b;
+      while (y !== 0) {
+        const q = Math.floor(x / y);
+        const r = x % y;
+        steps.push({ a: x, b: y, q, r });
+        x = y;
+        y = r;
+      }
+      gcd = x;
+
+      document.getElementById("inputs").classList.add("hidden");
+      document.getElementById("step").classList.remove("hidden");
+      showStep();
+    }
+
+    function showStep() {
+      const stepBox = document.getElementById("step");
+      const resultBox = document.getElementById("result");
+
+      if (currentStep < steps.length) {
+        const s = steps[currentStep];
+        stepBox.innerHTML = `
+          <h2>🧠 Trial ${currentStep + 1}</h2>
+          <p>What is the quotient and remainder when ${s.a} ÷ ${s.b}?</p>
+          <p><strong>Answer:</strong> ${s.a} = ${s.b} × ${s.q} + ${s.r}</p>
+          <button class="btn" onclick="nextStep()">Continue the Journey</button>
+        `;
+      } else {
+        stepBox.classList.add("hidden");
+        resultBox.classList.remove("hidden");
+        resultBox.innerHTML = `
+          <h2>🎉 Quest Complete!</h2>
+          <p>You have uncovered the ancient secret!</p>
+          <p><strong>GCD:</strong> ${gcd}</p>
+          <p><strong>🏆 Score:</strong> ${score}</p>
+          <p>The Kingdom of Numbers rejoices at your triumph.</p>
+        `;
+      }
+    }
+
+    function nextStep() {
+      score += currentStep === steps.length - 1 ? 20 : 10;
+      currentStep++;
+      showStep();
+    }
+  </script>
+</body>
+</html>
