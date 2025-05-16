@@ -7,7 +7,6 @@
   <style>
     body {
       font-family: 'Segoe UI', sans-serif;
-      margin: 0;
       padding: 2rem;
       background-color: #f4f6fa;
       color: #333;
@@ -38,7 +37,19 @@
       border-radius: 6px;
       border: 1px solid #ccc;
       margin-right: 10px;
-      width: 45%;
+      width: 100px;
+    }
+    .input-row {
+      display: flex;
+      gap: 1rem;
+      flex-wrap: wrap;
+      align-items: center;
+      margin-top: 1rem;
+    }
+    .hint {
+      margin-top: 10px;
+      color: #b91c1c;
+      font-weight: bold;
     }
     .hidden {
       display: none;
@@ -107,33 +118,51 @@
 
     function showStep() {
       const stepBox = document.getElementById("step");
-      const resultBox = document.getElementById("result");
+      const s = steps[currentStep];
 
-      if (currentStep < steps.length) {
-        const s = steps[currentStep];
-        stepBox.innerHTML = `
-          <h2>🧠 Trial ${currentStep + 1}</h2>
-          <p>What is the quotient and remainder when ${s.a} ÷ ${s.b}?</p>
-          <p><strong>Answer:</strong> ${s.a} = ${s.b} × ${s.q} + ${s.r}</p>
-          <button class="btn" onclick="nextStep()">Continue the Journey</button>
-        `;
+      stepBox.innerHTML = `
+        <h2>🧠 Trial ${currentStep + 1}</h2>
+        <p>What is the quotient and remainder when ${s.a} ÷ ${s.b}?</p>
+        <div class="input-row">
+          <label>Quotient (q): <input type="number" id="userQ" /></label>
+          <label>Remainder (r): <input type="number" id="userR" /></label>
+        </div>
+        <button class="btn" onclick="checkAnswer()">Submit Answer</button>
+        <div id="hint" class="hint"></div>
+      `;
+    }
+
+    function checkAnswer() {
+      const userQ = parseInt(document.getElementById("userQ").value);
+      const userR = parseInt(document.getElementById("userR").value);
+      const s = steps[currentStep];
+      const hintBox = document.getElementById("hint");
+
+      if (userQ === s.q && userR === s.r) {
+        hintBox.textContent = '';
+        score += currentStep === steps.length - 1 ? 20 : 10;
+        currentStep++;
+        if (currentStep >= steps.length) {
+          endGame();
+        } else {
+          showStep();
+        }
       } else {
-        stepBox.classList.add("hidden");
-        resultBox.classList.remove("hidden");
-        resultBox.innerHTML = `
-          <h2>🎉 Quest Complete!</h2>
-          <p>You have uncovered the ancient secret!</p>
-          <p><strong>GCD:</strong> ${gcd}</p>
-          <p><strong>🏆 Score:</strong> ${score}</p>
-          <p>The Kingdom of Numbers rejoices at your triumph.</p>
-        `;
+        hintBox.innerHTML = `Hint: Remember that <strong>${s.a} = ${s.b} × q + r</strong>. Try calculating ${s.b} × ${userQ} and subtracting from ${s.a}.`;
       }
     }
 
-    function nextStep() {
-      score += currentStep === steps.length - 1 ? 20 : 10;
-      currentStep++;
-      showStep();
+    function endGame() {
+      document.getElementById("step").classList.add("hidden");
+      const resultBox = document.getElementById("result");
+      resultBox.classList.remove("hidden");
+      resultBox.innerHTML = `
+        <h2>🎉 Quest Complete!</h2>
+        <p>You have uncovered the ancient secret!</p>
+        <p><strong>GCD:</strong> ${gcd}</p>
+        <p><strong>🏆 Score:</strong> ${score}</p>
+        <p>The Kingdom of Numbers rejoices at your triumph.</p>
+      `;
     }
   </script>
 </body>
